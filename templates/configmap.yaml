@@ -1,0 +1,27 @@
+{{- with .Values.balancer }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .appName }}-nginx-conf
+data:
+{{- include "platform.includeConfigs" (list $ .appName .) }}
+{{- end }}
+{{- with .Values.primary }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .appName }}-nginx-conf
+data:
+{{- include "platform.includeConfigs" (list $ .appName .) }}
+{{- end }}
+{{- with .Values.replica }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .appName }}-nginx-conf
+data:
+{{- include "platform.includeConfigs" (list $ .appName .) }}
+{{- end }}

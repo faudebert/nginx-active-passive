@@ -1,0 +1,200 @@
+{{- with .Values.balancer }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .appName }}
+  annotations:
+    ods.service: {{ .appName }}
+spec:
+  replicas: {{ .replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      ods.service: {{ .appName }}
+  template:
+    metadata:
+      labels:
+        ods.service: {{ .appName }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum | trunc 63 }}
+    spec:
+      containers:
+        - name: nginx
+          image: {{ include "platform.imageStr" .image }}
+        {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .ports.http }}
+              name: http
+          readinessProbe:
+            tcpSocket:
+              port: {{ .ports.http }}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: nginx-conf
+              subPath: default
+              readOnly: true
+            - mountPath: /etc/nginx/uwsgi_params
+              name: nginx-conf
+              subPath: uwsgi_params
+              readOnly: true
+            - mountPath: /var/run
+              name: var-run
+            - mountPath: /var/cache/nginx
+              name: nginx-caches
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              ods.service: {{ .appName }}
+          matchLabelKeys:
+            - pod-template-hash
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ .appName }}-nginx-conf
+        - name: var-run
+          emptyDir: {}
+        - name: nginx-caches
+          emptyDir:
+            sizeLimit: 512Mi
+      restartPolicy: Always
+{{- end }}
+
+{{- with .Values.primary }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .appName }}
+  annotations:
+    ods.service: {{ .appName }}
+spec:
+  replicas: {{ .replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      ods.service: {{ .appName }}
+  template:
+    metadata:
+      labels:
+        ods.service: {{ .appName }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum | trunc 63 }}
+    spec:
+      containers:
+        - name: nginx
+          image: {{ include "platform.imageStr" .image }}
+        {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .ports.http }}
+              name: http
+          readinessProbe:
+            tcpSocket:
+              port: {{ .ports.http }}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: nginx-conf
+              subPath: default
+              readOnly: true
+            - mountPath: /etc/nginx/uwsgi_params
+              name: nginx-conf
+              subPath: uwsgi_params
+              readOnly: true
+            - mountPath: /var/run
+              name: var-run
+            - mountPath: /var/cache/nginx
+              name: nginx-caches
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              ods.service: {{ .appName }}
+          matchLabelKeys:
+            - pod-template-hash
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ .appName }}-nginx-conf
+        - name: var-run
+          emptyDir: {}
+        - name: nginx-caches
+          emptyDir:
+            sizeLimit: 512Mi
+      restartPolicy: Always
+{{- end }}
+
+{{- with .Values.replica }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .appName }}
+  annotations:
+    ods.service: {{ .appName }}
+spec:
+  replicas: {{ .replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      ods.service: {{ .appName }}
+  template:
+    metadata:
+      labels:
+        ods.service: {{ .appName }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum | trunc 63 }}
+    spec:
+      containers:
+        - name: nginx
+          image: {{ include "platform.imageStr" .image }}
+        {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .ports.http }}
+              name: http
+          readinessProbe:
+            tcpSocket:
+              port: {{ .ports.http }}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: nginx-conf
+              subPath: default
+              readOnly: true
+            - mountPath: /etc/nginx/uwsgi_params
+              name: nginx-conf
+              subPath: uwsgi_params
+              readOnly: true
+            - mountPath: /var/run
+              name: var-run
+            - mountPath: /var/cache/nginx
+              name: nginx-caches
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              ods.service: {{ .appName }}
+          matchLabelKeys:
+            - pod-template-hash
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ .appName }}-nginx-conf
+        - name: var-run
+          emptyDir: {}
+        - name: nginx-caches
+          emptyDir:
+            sizeLimit: 512Mi
+      restartPolicy: Always
+{{- end }}

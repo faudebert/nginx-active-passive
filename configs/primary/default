@@ -1,0 +1,18 @@
+{{- /* vim: set filetype=nginx: */ -}}
+
+upstream nginx_cache {
+    server replica;
+    server httpbin.nginx-cache.svc.cluster.local backup;
+}
+
+server {
+    listen 80 default_server;
+
+    server_name httpbin.local;
+
+    root /var/www/html/;
+
+    location / {
+        proxy_pass http://nginx_cache;
+    }
+}

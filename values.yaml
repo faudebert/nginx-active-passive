@@ -1,0 +1,128 @@
+balancer:
+  # -- Name of the dispatcher deployment
+  appName: balancer
+  # Dispatcher's image
+  image:
+    # -- Image repository and name
+    name: nginx
+    # -- Image SHA-256
+    # @default -- `sha256:<sha256 value>`
+    sha: sha256:b947b2630c97622793113555e13332eec85bdc7a0ac6ab697159af78942bb856
+    # -- Image version
+    version: 1.27.5-alpine-slim
+  ingress:
+    # On a given cluster, only one pool-dispatcher instance must have an
+    # ingress set as "default" (i.e. wildcard ingress with no host set). This
+    # is a hack, based on https://viesure.io/nginx-ingress-controller/tech, to
+    # configure header-based routing using vanilla ingress-nginx.
+    #
+    # All traffic will go through the "default" ingress which will dispatch to
+    # the relevant zone-dispatcher upstream based on ODS-Zone HTTP header set
+    # by Opendatasoft frontends.
+    #
+    # For the "default" ingress, our chart will set a custom configuration
+    # snippet (see templates/uwsgi/pool-dispatcher/ingress.yaml) which
+    # overrides the NGINX proxy defined by usual ingress-nginx configuration.
+    #
+    # The purpose of "non-default" ingresses is to generate an NGINX upstream
+    # to be reused by the "default" ingress. They won't route traffic by
+    # themselves. Their hostnames are dummy ones set to avoid conflict with the
+    # "default" ingress.
+    #
+    # -- See values.yaml
+    default: false
+  # -- Number of replicas for the dispatcher deployment
+  replicas: 1
+  ports:
+    # -- Listening port of the dispatcher
+    http: 80
+  # -- Pool dispatcher security context
+  # @default -- See values.yaml
+  securityContext:
+    readOnlyRootFilesystem: true
+
+primary:
+  # -- Name of the dispatcher deployment
+  appName: primary
+  # Dispatcher's image
+  image:
+    # -- Image repository and name
+    name: nginx
+    # -- Image SHA-256
+    # @default -- `sha256:<sha256 value>`
+    sha: sha256:b947b2630c97622793113555e13332eec85bdc7a0ac6ab697159af78942bb856
+    # -- Image version
+    version: 1.27.5-alpine-slim
+  ingress:
+    # On a given cluster, only one pool-dispatcher instance must have an
+    # ingress set as "default" (i.e. wildcard ingress with no host set). This
+    # is a hack, based on https://viesure.io/nginx-ingress-controller/tech, to
+    # configure header-based routing using vanilla ingress-nginx.
+    #
+    # All traffic will go through the "default" ingress which will dispatch to
+    # the relevant zone-dispatcher upstream based on ODS-Zone HTTP header set
+    # by Opendatasoft frontends.
+    #
+    # For the "default" ingress, our chart will set a custom configuration
+    # snippet (see templates/uwsgi/pool-dispatcher/ingress.yaml) which
+    # overrides the NGINX proxy defined by usual ingress-nginx configuration.
+    #
+    # The purpose of "non-default" ingresses is to generate an NGINX upstream
+    # to be reused by the "default" ingress. They won't route traffic by
+    # themselves. Their hostnames are dummy ones set to avoid conflict with the
+    # "default" ingress.
+    #
+    # -- See values.yaml
+    default: false
+  # -- Number of replicas for the dispatcher deployment
+  replicas: 1
+  ports:
+    # -- Listening port of the dispatcher
+    http: 80
+  # -- Pool dispatcher security context
+  # @default -- See values.yaml
+  securityContext:
+    readOnlyRootFilesystem: true
+
+replica:
+  # -- Name of the dispatcher deployment
+  appName: replica
+  # Dispatcher's image
+  image:
+    # -- Image repository and name
+    name: nginx
+    # -- Image SHA-256
+    # @default -- `sha256:<sha256 value>`
+    sha: sha256:b947b2630c97622793113555e13332eec85bdc7a0ac6ab697159af78942bb856
+    # -- Image version
+    version: 1.27.5-alpine-slim
+  ingress:
+    # On a given cluster, only one pool-dispatcher instance must have an
+    # ingress set as "default" (i.e. wildcard ingress with no host set). This
+    # is a hack, based on https://viesure.io/nginx-ingress-controller/tech, to
+    # configure header-based routing using vanilla ingress-nginx.
+    #
+    # All traffic will go through the "default" ingress which will dispatch to
+    # the relevant zone-dispatcher upstream based on ODS-Zone HTTP header set
+    # by Opendatasoft frontends.
+    #
+    # For the "default" ingress, our chart will set a custom configuration
+    # snippet (see templates/uwsgi/pool-dispatcher/ingress.yaml) which
+    # overrides the NGINX proxy defined by usual ingress-nginx configuration.
+    #
+    # The purpose of "non-default" ingresses is to generate an NGINX upstream
+    # to be reused by the "default" ingress. They won't route traffic by
+    # themselves. Their hostnames are dummy ones set to avoid conflict with the
+    # "default" ingress.
+    #
+    # -- See values.yaml
+    default: false
+  # -- Number of replicas for the dispatcher deployment
+  replicas: 1
+  ports:
+    # -- Listening port of the dispatcher
+    http: 80
+  # -- Pool dispatcher security context
+  # @default -- See values.yaml
+  securityContext:
+    readOnlyRootFilesystem: true
